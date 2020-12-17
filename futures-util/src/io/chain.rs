@@ -2,11 +2,11 @@ use futures_core::ready;
 use futures_core::task::{Context, Poll};
 #[cfg(feature = "read-initializer")]
 use futures_io::Initializer;
-use futures_io::{AsyncBufRead, AsyncRead, IoSliceMut};
+use futures_io::{AsyncBufRead, AsyncRead};
 use pin_project_lite::pin_project;
-use std::fmt;
-use std::io;
-use std::pin::Pin;
+use core::fmt;
+use bare_io as io;
+use core::pin::Pin;
 
 pin_project! {
     /// Reader for the [`chain`](super::AsyncReadExt::chain) method.
@@ -98,23 +98,23 @@ where
         this.second.poll_read(cx, buf)
     }
 
-    fn poll_read_vectored(
-        self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-        bufs: &mut [IoSliceMut<'_>],
-    ) -> Poll<io::Result<usize>> {
-        let this = self.project();
-
-        if !*this.done_first {
-            let n = ready!(this.first.poll_read_vectored(cx, bufs)?);
-            if n == 0 && bufs.iter().any(|b| !b.is_empty()) {
-                *this.done_first = true
-            } else {
-                return Poll::Ready(Ok(n));
-            }
-        }
-        this.second.poll_read_vectored(cx, bufs)
-    }
+//    fn poll_read_vectored(
+//        self: Pin<&mut Self>,
+//        cx: &mut Context<'_>,
+//        bufs: &mut [IoSliceMut<'_>],
+//    ) -> Poll<io::Result<usize>> {
+//        let this = self.project();
+//
+//        if !*this.done_first {
+//            let n = ready!(this.first.poll_read_vectored(cx, bufs)?);
+//            if n == 0 && bufs.iter().any(|b| !b.is_empty()) {
+//                *this.done_first = true
+//            } else {
+//                return Poll::Ready(Ok(n));
+//            }
+//        }
+//        this.second.poll_read_vectored(cx, bufs)
+//    }
 
     #[cfg(feature = "read-initializer")]
     unsafe fn initializer(&self) -> Initializer {

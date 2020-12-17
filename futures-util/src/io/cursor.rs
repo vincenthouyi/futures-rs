@@ -2,8 +2,10 @@ use futures_core::task::{Context, Poll};
 #[cfg(feature = "read_initializer")]
 use futures_io::Initializer;
 use futures_io::{AsyncBufRead, AsyncRead, AsyncSeek, AsyncWrite, IoSlice, IoSliceMut, SeekFrom};
-use std::io;
-use std::pin::Pin;
+use bare_io as io;
+use core::pin::Pin;
+use alloc::vec::Vec;
+use alloc::boxed::Box;
 
 /// A `Cursor` wraps an in-memory buffer and provides it with a
 /// [`AsyncSeek`] implementation.

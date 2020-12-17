@@ -4,8 +4,9 @@ use futures_core::task::{Context, Poll};
 use futures_io::Initializer;
 use futures_io::{AsyncRead, AsyncBufRead};
 use pin_project_lite::pin_project;
-use std::{cmp, io};
-use std::pin::Pin;
+use bare_io as io;
+use core::{cmp};
+use core::pin::Pin;
 
 pin_project! {
     /// Reader for the [`take`](super::AsyncReadExt::take) method.

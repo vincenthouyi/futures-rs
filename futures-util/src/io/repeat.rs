@@ -2,10 +2,10 @@ use futures_core::ready;
 use futures_core::task::{Context, Poll};
 #[cfg(feature = "read-initializer")]
 use futures_io::Initializer;
-use futures_io::{AsyncRead, IoSliceMut};
-use std::fmt;
-use std::io;
-use std::pin::Pin;
+use futures_io::{AsyncRead};
+use core::fmt;
+use bare_io as io;
+use core::pin::Pin;
 
 /// Reader for the [`repeat()`] function.
 #[must_use = "readers do nothing unless polled"]
@@ -47,18 +47,18 @@ impl AsyncRead for Repeat {
         Poll::Ready(Ok(buf.len()))
     }
 
-    #[inline]
-    fn poll_read_vectored(
-        mut self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-        bufs: &mut [IoSliceMut<'_>],
-    ) -> Poll<io::Result<usize>> {
-        let mut nwritten = 0;
-        for buf in bufs {
-            nwritten += ready!(self.as_mut().poll_read(cx, buf))?;
-        }
-        Poll::Ready(Ok(nwritten))
-    }
+//    #[inline]
+//    fn poll_read_vectored(
+//        mut self: Pin<&mut Self>,
+//        cx: &mut Context<'_>,
+//        bufs: &mut [IoSliceMut<'_>],
+//    ) -> Poll<io::Result<usize>> {
+//        let mut nwritten = 0;
+//        for buf in bufs {
+//            nwritten += ready!(self.as_mut().poll_read(cx, buf))?;
+//        }
+//        Poll::Ready(Ok(nwritten))
+//    }
 
     #[cfg(feature = "read-initializer")]
     #[inline]

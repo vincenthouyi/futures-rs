@@ -2,9 +2,9 @@ use futures_core::task::{Context, Poll};
 #[cfg(feature = "read-initializer")]
 use futures_io::Initializer;
 use futures_io::{AsyncBufRead, AsyncRead};
-use std::fmt;
-use std::io;
-use std::pin::Pin;
+use core::fmt;
+use bare_io as io;
+use core::pin::Pin;
 
 /// Reader for the [`empty()`] function.
 #[must_use = "readers do nothing unless polled"]

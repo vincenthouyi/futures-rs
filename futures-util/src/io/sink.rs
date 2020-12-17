@@ -1,8 +1,8 @@
 use futures_core::task::{Context, Poll};
-use futures_io::{AsyncWrite, IoSlice};
-use std::fmt;
-use std::io;
-use std::pin::Pin;
+use futures_io::{AsyncWrite};
+use core::fmt;
+use bare_io as io;
+use core::pin::Pin;
 
 /// Writer for the [`sink()`] function.
 #[must_use = "writers do nothing unless polled"]
@@ -41,14 +41,14 @@ impl AsyncWrite for Sink {
         Poll::Ready(Ok(buf.len()))
     }
 
-    #[inline]
-    fn poll_write_vectored(
-        self: Pin<&mut Self>,
-        _: &mut Context<'_>,
-        bufs: &[IoSlice<'_>],
-    ) -> Poll<io::Result<usize>> {
-        Poll::Ready(Ok(bufs.iter().map(|b| b.len()).sum()))
-    }
+//    #[inline]
+//    fn poll_write_vectored(
+//        self: Pin<&mut Self>,
+//        _: &mut Context<'_>,
+//        bufs: &[IoSlice<'_>],
+//    ) -> Poll<io::Result<usize>> {
+//        Poll::Ready(Ok(bufs.iter().map(|b| b.len()).sum()))
+//    }
 
     #[inline]
     fn poll_flush(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<io::Result<()>> {

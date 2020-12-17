@@ -2,11 +2,13 @@ use futures_core::ready;
 use futures_core::future::Future;
 use futures_core::task::{Context, Poll};
 use futures_io::AsyncBufRead;
-use std::io;
-use std::mem;
-use std::pin::Pin;
-use std::str;
+use bare_io as io;
+use core::mem;
+use core::pin::Pin;
+use core::str;
 use super::read_until::read_until_internal;
+use alloc::vec::Vec;
+use alloc::string::String;
 
 /// Future for the [`read_line`](super::AsyncBufReadExt::read_line) method.
 #[derive(Debug)]

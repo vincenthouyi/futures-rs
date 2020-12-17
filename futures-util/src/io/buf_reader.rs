@@ -4,10 +4,12 @@ use futures_core::task::{Context, Poll};
 use futures_io::Initializer;
 use futures_io::{AsyncBufRead, AsyncRead, AsyncSeek, AsyncWrite, IoSliceMut, SeekFrom};
 use pin_project_lite::pin_project;
-use std::io::{self, Read};
-use std::pin::Pin;
-use std::{cmp, fmt};
+use bare_io as io;
+use io::{self, Read};
+use core::pin::Pin;
+use core::{cmp, fmt};
 use super::DEFAULT_BUF_SIZE;
+use alloc::vec::Vec;
 
 pin_project! {
     /// The `BufReader` struct adds buffering to any reader.
@@ -98,22 +100,22 @@ impl<R: AsyncRead> AsyncRead for BufReader<R> {
         Poll::Ready(Ok(nread))
     }
 
-    fn poll_read_vectored(
-        mut self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-        bufs: &mut [IoSliceMut<'_>],
-    ) -> Poll<io::Result<usize>> {
-        let total_len = bufs.iter().map(|b| b.len()).sum::<usize>();
-        if self.pos == self.cap && total_len >= self.buffer.len() {
-            let res = ready!(self.as_mut().project().inner.poll_read_vectored(cx, bufs));
-            self.discard_buffer();
-            return Poll::Ready(res);
-        }
-        let mut rem = ready!(self.as_mut().poll_fill_buf(cx))?;
-        let nread = rem.read_vectored(bufs)?;
-        self.consume(nread);
-        Poll::Ready(Ok(nread))
-    }
+//    fn poll_read_vectored(
+//        mut self: Pin<&mut Self>,
+//        cx: &mut Context<'_>,
+//        bufs: &mut [IoSliceMut<'_>],
+//    ) -> Poll<io::Result<usize>> {
+//        let total_len = bufs.iter().map(|b| b.len()).sum::<usize>();
+//        if self.pos == self.cap && total_len >= self.buffer.len() {
+//            let res = ready!(self.as_mut().project().inner.poll_read_vectored(cx, bufs));
+//            self.discard_buffer();
+//            return Poll::Ready(res);
+//        }
+//        let mut rem = ready!(self.as_mut().poll_fill_buf(cx))?;
+//        let nread = rem.read_vectored(bufs)?;
+//        self.consume(nread);
+//        Poll::Ready(Ok(nread))
+//    }
 
     // we can't skip unconditionally because of the large buffer case in read.
     #[cfg(feature = "read-initializer")]

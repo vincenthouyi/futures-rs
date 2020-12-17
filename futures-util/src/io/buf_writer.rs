@@ -2,9 +2,10 @@ use futures_core::ready;
 use futures_core::task::{Context, Poll};
 use futures_io::{AsyncBufRead, AsyncRead, AsyncSeek, AsyncWrite, IoSlice, SeekFrom};
 use pin_project_lite::pin_project;
-use std::fmt;
-use std::io::{self, Write};
-use std::pin::Pin;
+use core::fmt;
+use core_io as io;
+use io::{self, Write};
+use core::pin::Pin;
 use super::DEFAULT_BUF_SIZE;
 
 pin_project! {
@@ -105,21 +106,21 @@ impl<W: AsyncWrite> AsyncWrite for BufWriter<W> {
         }
     }
 
-    fn poll_write_vectored(
-        mut self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-        bufs: &[IoSlice<'_>],
-    ) -> Poll<io::Result<usize>> {
-        let total_len = bufs.iter().map(|b| b.len()).sum::<usize>();
-        if self.buf.len() + total_len > self.buf.capacity() {
-            ready!(self.as_mut().flush_buf(cx))?;
-        }
-        if total_len >= self.buf.capacity() {
-            self.project().inner.poll_write_vectored(cx, bufs)
-        } else {
-            Poll::Ready(self.project().buf.write_vectored(bufs))
-        }
-    }
+//    fn poll_write_vectored(
+//        mut self: Pin<&mut Self>,
+//        cx: &mut Context<'_>,
+//        bufs: &[IoSlice<'_>],
+//    ) -> Poll<io::Result<usize>> {
+//        let total_len = bufs.iter().map(|b| b.len()).sum::<usize>();
+//        if self.buf.len() + total_len > self.buf.capacity() {
+//            ready!(self.as_mut().flush_buf(cx))?;
+//        }
+//        if total_len >= self.buf.capacity() {
+//            self.project().inner.poll_write_vectored(cx, bufs)
+//        } else {
+//            Poll::Ready(self.project().buf.write_vectored(bufs))
+//        }
+//    }
 
     fn poll_flush(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<io::Result<()>> {
         ready!(self.as_mut().flush_buf(cx))?;

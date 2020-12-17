@@ -1,10 +1,11 @@
 use crate::lock::BiLock;
 use futures_core::ready;
 use futures_core::task::{Context, Poll};
-use futures_io::{AsyncRead, AsyncWrite, IoSlice, IoSliceMut};
+//use futures_io::{AsyncRead, AsyncWrite, IoSlice, IoSliceMut};
+use futures_io::{AsyncRead, AsyncWrite};
 use core::fmt;
-use std::io;
-use std::pin::Pin;
+use bare_io as io;
+use core::pin::Pin;
 
 /// The readable half of an object returned from `AsyncRead::split`.
 #[derive(Debug)]
@@ -61,11 +62,11 @@ impl<R: AsyncRead> AsyncRead for ReadHalf<R> {
         lock_and_then(&self.handle, cx, |l, cx| l.poll_read(cx, buf))
     }
 
-    fn poll_read_vectored(self: Pin<&mut Self>, cx: &mut Context<'_>, bufs: &mut [IoSliceMut<'_>])
-        -> Poll<io::Result<usize>>
-    {
-        lock_and_then(&self.handle, cx, |l, cx| l.poll_read_vectored(cx, bufs))
-    }
+//    fn poll_read_vectored(self: Pin<&mut Self>, cx: &mut Context<'_>, bufs: &mut [IoSliceMut<'_>])
+//        -> Poll<io::Result<usize>>
+//    {
+//        lock_and_then(&self.handle, cx, |l, cx| l.poll_read_vectored(cx, bufs))
+//    }
 }
 
 impl<W: AsyncWrite> AsyncWrite for WriteHalf<W> {
@@ -75,11 +76,11 @@ impl<W: AsyncWrite> AsyncWrite for WriteHalf<W> {
         lock_and_then(&self.handle, cx, |l, cx| l.poll_write(cx, buf))
     }
 
-    fn poll_write_vectored(self: Pin<&mut Self>, cx: &mut Context<'_>, bufs: &[IoSlice<'_>])
-        -> Poll<io::Result<usize>>
-    {
-        lock_and_then(&self.handle, cx, |l, cx| l.poll_write_vectored(cx, bufs))
-    }
+//    fn poll_write_vectored(self: Pin<&mut Self>, cx: &mut Context<'_>, bufs: &[IoSlice<'_>])
+//        -> Poll<io::Result<usize>>
+//    {
+//        lock_and_then(&self.handle, cx, |l, cx| l.poll_write_vectored(cx, bufs))
+//    }
 
     fn poll_flush(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<io::Result<()>> {
         lock_and_then(&self.handle, cx, |l, cx| l.poll_flush(cx))

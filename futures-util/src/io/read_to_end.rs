@@ -2,9 +2,9 @@ use futures_core::ready;
 use futures_core::future::Future;
 use futures_core::task::{Context, Poll};
 use futures_io::AsyncRead;
-use std::io;
-use std::pin::Pin;
-use std::vec::Vec;
+use bare_io as io;
+use core::pin::Pin;
+use alloc::vec::Vec;
 
 /// Future for the [`read_to_end`](super::AsyncReadExt::read_to_end) method.
 #[derive(Debug)]
